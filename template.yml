@@ -1,0 +1,76 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+    ContactFormApiDataBucket:
+        Type: AWS::S3::Bucket
+        Properties:
+            BucketName: contact-form-api-data-bucket
+
+    ContactFormApi:
+        Type: AWS::Serverless::Api
+        Properties:
+            StageName: prod
+
+    ContactFormApiSaveMessage:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.saveMessage
+            Runtime: nodejs18.x
+            CodeUri: ./lambda
+            MemorySize: 128
+            Timeout: 10
+            Policies:
+                - S3ReadPolicy:
+                      BucketName: !Ref ContactFormApiDataBucket
+                - S3WritePolicy:
+                      BucketName: !Ref ContactFormApiDataBucket
+            Environment:
+                Variables:
+                    BUCKET_NAME: !Ref ContactFormApiDataBucket
+            Events:
+                ApiGateway:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref ContactFormApi
+                        Path: /
+                        Method: POST
+                        Auth:
+                            ApiKeyRequired: true
+
+
+    ContactFormApiKey:
+        Type: AWS::ApiGateway::ApiKey
+        Properties:
+            Enabled: true
+            Name: ContactFormApiKey
+            StageKeys:
+                - RestApiId: !Ref ContactFormApi
+                  StageName: prod
+    ContactFormApiUsagePlan:
+        Type: AWS::ApiGateway::UsagePlan
+        Properties:
+            UsagePlanName: ContactFormApiUsagePlan
+            Description: "Usage plan for the contact form API"
+            ApiStages:
+                - ApiId: !Ref ContactFormApi
+                  Stage: prod
+            Throttle:
+                BurstLimit: 100
+                RateLimit: 50
+    ContactFormApiUsagePlanKey:
+        Type: AWS::ApiGateway::UsagePlanKey
+        Properties:
+            KeyId: !Ref ContactFormApiKey
+            KeyType: API_KEY
+            UsagePlanId: !Ref ContactFormApiUsagePlan
+Outputs:
+    ApiKey:
+        Description: "API Key for accessing the endpoint"
+        Value: !Ref ContactFormApiKey
+    ApiUrl:
+        Description: "API Gateway endpoint URL"
+        Value: !Sub "https://${ContactFormApi}.execute-api.${AWS::Region}.amazonaws.com/prod/"
+    BucketName:
+        Description: "S3 Bucket Name"
+        Value: !Ref ContactFormApiDataBucket
