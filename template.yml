@@ -11,6 +11,10 @@ Resources:
         Type: AWS::Serverless::Api
         Properties:
             StageName: prod
+            Cors:
+                AllowOrigin: "'*'"
+                AllowMethods: "'OPTIONS,GET,POST'"
+                AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
 
     ContactFormApiSaveMessage:
         Type: AWS::Serverless::Function
