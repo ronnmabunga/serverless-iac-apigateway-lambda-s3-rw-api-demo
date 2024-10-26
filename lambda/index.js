@@ -38,7 +38,7 @@ exports.saveMessage = async (event) => {
             statusCode: 200,
             headers: {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,POST",
+                "Access-Control-Allow-Methods": "OPTIONS, POST",
                 "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
             },
             body: JSON.stringify({ success: true, message: "Data updated successfully!" }),
@@ -49,7 +49,7 @@ exports.saveMessage = async (event) => {
             statusCode: 500,
             headers: {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,POST",
+                "Access-Control-Allow-Methods": "OPTIONS, POST",
                 "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
             },
             body: JSON.stringify({ success: false, error: "An unexpected error occurred." }),
@@ -59,6 +59,7 @@ exports.saveMessage = async (event) => {
 
 exports.retrieveMessages = async (event) => {
     const email = event.pathParameters.email;
+    console.log("email: ", email);
     try {
         let parsedData = [];
         try {
@@ -75,7 +76,7 @@ exports.retrieveMessages = async (event) => {
             statusCode: 200,
             headers: {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Access-Control-Allow-Methods": "OPTIONS, GET",
                 "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
             },
             body: JSON.stringify({ success: true, message: "Data retrieved successfully!", data: filteredMessages }),
@@ -86,10 +87,22 @@ exports.retrieveMessages = async (event) => {
             statusCode: 500,
             headers: {
                 "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Access-Control-Allow-Methods": "OPTIONS, GET",
                 "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
             },
             body: JSON.stringify({ success: false, error: "An unexpected error occurred." }),
         };
     }
+};
+
+exports.optionsHandler = async (event) => {
+    console.log("Path: ", event.rawPath || event.path);
+    return {
+        statusCode: 200,
+        headers: {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Methods": "OPTIONS, POST, GET",
+            "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+        },
+    };
 };
