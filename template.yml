@@ -57,10 +57,31 @@ Resources:
                     Type: Api
                     Properties:
                         RestApiId: !Ref ContactFormApi
-                        Path: /
+                        Path: /{email}
                         Method: GET
                         Auth:
                             ApiKeyRequired: true
+    ContactFormApiOptions:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.optionsHandler
+            Runtime: nodejs18.x
+            CodeUri: ./lambda
+            MemorySize: 128
+            Timeout: 10
+            Events:
+                ApiGatewayRootOptions:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref ContactFormApi
+                        Path: /
+                        Method: OPTIONS
+                ApiGatewayEmailOptions:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref ContactFormApi
+                        Path: /{email}
+                        Method: OPTIONS
 
     ContactFormApiKey:
         Type: AWS::ApiGateway::ApiKey

@@ -36,18 +36,29 @@ exports.saveMessage = async (event) => {
         await uploadFileToS3(BUCKET_NAME, FILE_NAME, JSON.stringify(parsedData));
         return {
             statusCode: 200,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST",
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            },
             body: JSON.stringify({ success: true, message: "Data updated successfully!" }),
         };
     } catch (error) {
         console.error("Error processing request:", error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,POST",
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            },
             body: JSON.stringify({ success: false, error: "An unexpected error occurred." }),
         };
     }
 };
 
 exports.retrieveMessages = async (event) => {
+    const email = event.pathParameters.email;
     try {
         let parsedData = [];
         try {
@@ -59,14 +70,25 @@ exports.retrieveMessages = async (event) => {
             }
             console.error("File does not exist.");
         }
+        const filteredMessages = parsedData.filter((msg) => msg.email === email);
         return {
             statusCode: 200,
-            body: JSON.stringify({ success: true, message: "Data retrieved successfully!", data: JSON.stringify(parsedData) }),
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            },
+            body: JSON.stringify({ success: true, message: "Data retrieved successfully!", data: filteredMessages }),
         };
     } catch (error) {
         console.error("Error processing request:", error);
         return {
             statusCode: 500,
+            headers: {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "OPTIONS,GET",
+                "Access-Control-Allow-Headers": "Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token",
+            },
             body: JSON.stringify({ success: false, error: "An unexpected error occurred." }),
         };
     }

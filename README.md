@@ -66,7 +66,7 @@ The API can receive a JSON document which is appended to the JSON array object s
 ## API Routes Overview
 
 -   **POST /prod:** Adds the request body to the array of messages on file.
--   **GET /prod:** Retrieves the messages on file.
+-   **GET /prod/{email}:** Retrieves the messages on file from the email provided from path.
 
 ## API Key Authentication
 
