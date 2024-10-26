@@ -38,6 +38,29 @@ Resources:
                         Auth:
                             ApiKeyRequired: true
 
+    ContactFormApiRetrieveMessage:
+        Type: AWS::Serverless::Function
+        Properties:
+            Handler: index.retrieveMessages
+            Runtime: nodejs18.x
+            CodeUri: ./lambda
+            MemorySize: 128
+            Timeout: 10
+            Policies:
+                - S3ReadPolicy:
+                      BucketName: !Ref ContactFormApiDataBucket
+            Environment:
+                Variables:
+                    BUCKET_NAME: !Ref ContactFormApiDataBucket
+            Events:
+                ApiGateway:
+                    Type: Api
+                    Properties:
+                        RestApiId: !Ref ContactFormApi
+                        Path: /
+                        Method: GET
+                        Auth:
+                            ApiKeyRequired: true
 
     ContactFormApiKey:
         Type: AWS::ApiGateway::ApiKey

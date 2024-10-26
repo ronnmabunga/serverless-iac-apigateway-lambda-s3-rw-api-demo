@@ -46,3 +46,28 @@ exports.saveMessage = async (event) => {
         };
     }
 };
+
+exports.retrieveMessages = async (event) => {
+    try {
+        let parsedData = [];
+        try {
+            const currentData = await getFileFromS3(BUCKET_NAME, FILE_NAME);
+            parsedData = JSON.parse(currentData.Body.toString());
+        } catch (error) {
+            if (error.code !== "NoSuchKey") {
+                throw error;
+            }
+            console.error("File does not exist.");
+        }
+        return {
+            statusCode: 200,
+            body: JSON.stringify({ success: true, message: "Data retrieved successfully!", data: JSON.stringify(parsedData) }),
+        };
+    } catch (error) {
+        console.error("Error processing request:", error);
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ success: false, error: "An unexpected error occurred." }),
+        };
+    }
+};
